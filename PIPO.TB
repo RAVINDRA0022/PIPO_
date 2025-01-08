@@ -1,0 +1,43 @@
+`timescale 1ns / 1ps
+
+module pipo_tb;
+
+reg clk;
+reg rst;
+reg [3:0] data_in;
+
+wire [3:0] out;
+
+pipo uut (
+    .clk(clk),
+    .rst(rst),
+    .data_in(data_in),
+    .out(out)
+);
+
+initial begin
+    clk = 0;
+    forever #5 clk = ~clk; 
+end
+
+initial begin
+    $display("Time\tclk\trst\tdata_in\tout");
+    $monitor("%g\t%b\t%b\t%b\t%b", $time, clk, rst, data_in, out);
+
+    rst = 1; data_in = 4'b0000; 
+    #10 rst = 0;                
+
+    #10 data_in = 4'b1010;
+    #10 data_in = 4'b1100;
+    #10 data_in = 4'b1111;
+    
+    // Assert reset again
+    #10 rst = 1;
+    #10 rst = 0;
+    
+    // Final state
+    #10 data_in = 4'b0101;
+    #10 $finish; // End simulation
+end
+
+endmodule
